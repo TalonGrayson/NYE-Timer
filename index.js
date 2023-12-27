@@ -1,6 +1,8 @@
 const { DateTime } = require("luxon");
+const targetDateTime = `${DateTime.now().plus({ years: 1}).year}-01-01T00:00:00`
 
 console.log("Starting NYE Countdowns...");
+console.log("Counting down to: %o", targetDateTime);
 
 let timezones = [
     "Europe/London",
@@ -18,15 +20,14 @@ let timezones = [
     "Pacific/Pago_Pago"
 ]
 let timezonesCounted = 0;
-let allTimezonesCounted = false;
 
 
-console.log("Total timezones: %o", timezones.length);
-console.log("Timezones counted: %o", timezonesCounted);
 
 const countdown = () => {
     setTimeout(() => {
-        const millisecondsRemaining = DateTime.local(2024, 1, 1, 0, 0, 0, 0).setZone(timezones[timezonesCounted]).diffNow().values.milliseconds;
+        let ukTime = DateTime.now().setZone(timezones[0]);
+        let nextMidnight = DateTime.fromISO(targetDateTime, { zone: timezones[timezonesCounted] });
+        let millisecondsRemaining = nextMidnight - ukTime;
 
         const secondsRemaining = Math.floor(millisecondsRemaining/1000);
         const minutesRemaining = Math.floor(secondsRemaining/60);
@@ -36,16 +37,28 @@ const countdown = () => {
         const trueHoursRemaining = hoursRemaining - (daysRemaining*24);
         const trueMinutesRemaining = minutesRemaining - (hoursRemaining*60);
         const trueSecondsRemaining = secondsRemaining - (minutesRemaining*60);
-        const trueMillisecondsRemaining = millisecondsRemaining - (secondsRemaining*1000);
+        // const trueMillisecondsRemaining = millisecondsRemaining - (secondsRemaining*1000);
 
-        const countdownString = `${daysRemaining} day${daysRemaining != 1 ? "s" : ""}, ${trueHoursRemaining}h ${trueMinutesRemaining}m ${trueSecondsRemaining}s`
+        let countdownString = `${trueMinutesRemaining}m ${trueSecondsRemaining}s`
+
+        if(trueHoursRemaining > 0 || daysRemaining > 0) {
+            countdownString = `${trueHoursRemaining}h ${countdownString}`
+        }
+
+        if(daysRemaining > 0) {
+            countdownString = `${daysRemaining}d ${countdownString}`
+        }
     
         if(millisecondsRemaining > 0) {
-            console.log(`Countdown to NYE for ${timezones[timezonesCounted]}: ${countdownString}`)
-            countdown();
-        } else {
+            console.log(countdownString)
+        } else if (timezones[timezonesCounted+1]) {
             timezonesCounted++;
+            console.log("Next timezone to celebrate NYE: %o", timezones[timezonesCounted]);
+        } else {
+            return;
         }
+
+        countdown();
     }, 1000)
 }
 
