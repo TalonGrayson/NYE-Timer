@@ -4,8 +4,6 @@ module.exports = class Action {
     }
 
     async happyNewYear(scene, source, duration) {
-        console.log(arguments)
-        console.log("Happy new year!");
         this.#timedSourceDisplay(this.obsCon, scene, source, duration);
     }
 
