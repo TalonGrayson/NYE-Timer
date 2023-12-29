@@ -1,6 +1,5 @@
 // Use .env file for local environment variables
-// const dotenv = require("dotenv");
-// dotenv.config();
+require('dotenv').config()
 // Package: https://github.com/obs-websocket-community-projects/obs-websocket-js
 // Docs: https://github.com/obsproject/obs-websocket/blob/master/docs/generated/protocol.md
 
@@ -23,7 +22,7 @@ obs
 
 // You must add this handler to avoid uncaught exceptions.
 obs.on("error", (err) => {
-  console.error("Error:", err);
+  console.error("OBS Websocket Error (obs-connector):", err);
 });
 
 module.exports.obs = obs;

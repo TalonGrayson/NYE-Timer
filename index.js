@@ -1,31 +1,29 @@
+const obs = require("./obs-connector");
 const { DateTime } = require("luxon");
-const obsCon = require("./obs-connector");
 const Action = require("./actions");
-const action = new Action();
-const targetDateTime = `2024-01-01T00:00:00`
-// const targetDateTime = "2023-12-29T13:27:00"
+const targetDateTime = "2024-01-01T00:00:00"
+// const targetDateTime = "2023-12-29T16:58:00"
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
 
 let timezones = [
-    "Europe/London",
-    "Atlantic/Cape_Verde",
-    "America/Nuuk",
-    "America/Argentina/Buenos_Aires",
-    "America/St_Johns",
-    "America/Caracas",
-    "America/New_York",
-    "America/Mexico_City",
-    "America/Denver",
-    "America/Los_Angeles",
-    "America/Anchorage",
-    "Pacific/Honolulu",
-    "Pacific/Pago_Pago"
+    "Europe/London",                        // GMT  (UTC +0) 
+    "Atlantic/Cape_Verde",                  // CVT  (UTC -1) 
+    "America/Nuuk",                         // CGT  (UTC -2) 
+    "America/Buenos_Aires",                 // ART  (UTC -3) 
+    "America/St_Johns",                     // NST  (UTC -3:30)
+    "America/Goose_Bay",                    // AST  (UTC -4) 
+    "America/New_York",                     // EST  (UTC -5) 
+    "America/Mexico_City",                  // CST  (UTC -6) 
+    "America/Denver",                       // MST  (UTC -7) 
+    "America/Los_Angeles",                  // PST  (UTC -8) 
+    "America/Anchorage",                    // AKST (UTC -9) 
+    "Pacific/Marquesas",                    // MART (UTC -9:30)
+    "Pacific/Honolulu",                     // HST  (UTC -10)
+    "Pacific/Pago_Pago"                     // SST  (UTC -11)
 ]
 let timezonesCounted = 0;
-
-
 
 const countdown = () => {
     setTimeout(() => {
@@ -41,7 +39,6 @@ const countdown = () => {
         const trueHoursRemaining = hoursRemaining - (daysRemaining*24);
         const trueMinutesRemaining = minutesRemaining - (hoursRemaining*60);
         const trueSecondsRemaining = secondsRemaining - (minutesRemaining*60);
-        // const trueMillisecondsRemaining = millisecondsRemaining - (secondsRemaining*1000);
 
         let countdownString = `${trueMinutesRemaining}m ${trueSecondsRemaining}s`
 
@@ -57,7 +54,7 @@ const countdown = () => {
             console.log(countdownString)
         } else if (timezones[timezonesCounted+1]) {
             timezonesCounted++;
-            action.happyNewYear(obsCon, {scene: "Popups", source: "HNY", duration: "5"});
+            new Action(obs).happyNewYear("Popups", "ShotDisclaimer", 8);
             console.log("Next timezone to celebrate NYE: %o", timezones[timezonesCounted]);
         } else {
             return;
