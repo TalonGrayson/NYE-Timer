@@ -1,5 +1,9 @@
 const { DateTime } = require("luxon");
-const targetDateTime = `${DateTime.now().plus({ years: 1}).year}-01-01T00:00:00`
+const obsCon = require("./obs-connector");
+const Action = require("./actions");
+const action = new Action();
+// const targetDateTime = `${DateTime.now().plus({ years: 1}).year}-01-01T00:00:00`
+const targetDateTime = "2023-12-29T13:15:00"
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
@@ -53,6 +57,7 @@ const countdown = () => {
             console.log(countdownString)
         } else if (timezones[timezonesCounted+1]) {
             timezonesCounted++;
+            action.happyNewYear(obsCon, {scene: "Popups", source: "HNY", duration: "5"});
             console.log("Next timezone to celebrate NYE: %o", timezones[timezonesCounted]);
         } else {
             return;
