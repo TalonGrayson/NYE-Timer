@@ -2,7 +2,7 @@ const obs = require("./obs-connector");
 const { DateTime } = require("luxon");
 const Action = require("./actions");
 // const targetDateTime = "2024-01-01T00:00:00"
-const targetDateTime = "2023-12-29T21:17:00"
+const targetDateTime = "2023-12-29T21:52:00"
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
@@ -60,7 +60,11 @@ const displayCountdownString = (timeRemaining) => {
         countdownString = `${timeRemaining.days}d ${countdownString}`
     }
 
-    console.log(countdownString);
+    console.clear();
+    if(timezonesCounted > 0) {
+        console.log(`Happy New Year, ${timezones[timezonesCounted-1].split("/")[1]}!`)
+    }
+    console.log(`${countdownString} until New Year in ${timezones[timezonesCounted].split("/")[1]}!`);
 }
 
 const thereIsAnotherTimezone = () => {
