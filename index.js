@@ -2,7 +2,7 @@ const obs = require("./obs-connector");
 const { DateTime } = require("luxon");
 const Action = require("./actions");
 // const targetDateTime = "2024-01-01T00:00:00"
-const targetDateTime = "2023-12-29T21:16:00"
+const targetDateTime = "2023-12-29T21:17:00"
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
