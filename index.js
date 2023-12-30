@@ -2,7 +2,7 @@ const obs = require("./obs-connector");
 const { DateTime } = require("luxon");
 const Action = require("./actions");
 const targetDateTime = "2024-01-01T00:00:00"
-// const targetDateTime = "2023-12-29T21:52:00"
+// const targetDateTime = "2023-12-30T19:49:00"
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
@@ -65,10 +65,22 @@ const displayCountdownString = (timeRemaining) => {
         console.log(`Happy New Year, ${timezones[timezonesCounted-1].split("/")[1]}!`)
     }
     console.log(`${countdownString} until New Year in ${timezones[timezonesCounted].split("/")[1]}!`);
+
+    if(lessThanTenSecondsToGo(timeRemaining)) {
+        console.log("COUNTDOWN: %o", timeRemaining.seconds);
+    }
 }
 
 const thereIsAnotherTimezone = () => {
     return timezones[timezonesCounted+1] != null;
+}
+
+tenSecondsToGo = (timeRemaining) => {
+    return timeRemaining.days <= 0 && timeRemaining.hours <= 0 && timeRemaining.minutes <= 0 && timeRemaining.seconds == 10;
+}
+
+lessThanTenSecondsToGo = (timeRemaining) => {
+    return timeRemaining.days <= 0 && timeRemaining.hours <= 0 && timeRemaining.minutes <= 0 && timeRemaining.seconds <= 10;
 }
 
 const countdownHasReachedZero = (timeRemaining) => {
@@ -88,11 +100,13 @@ const countdown = () => {
     setTimeout(() => {
         const timeRemaining = calculateTimeRemaining();
         
-        if(countdownHasNotReachedZero(timeRemaining)) {
+        if(tenSecondsToGo(timeRemaining)) {
+            displayCountdownString(timeRemaining);
+            new Action(obs).happyNewYear("Popups", "NYECountdown", 33);
+        } else if(countdownHasNotReachedZero(timeRemaining)) {
             displayCountdownString(timeRemaining);
         } else if (thereIsAnotherTimezone()) {
             trackNextTimezone();
-            new Action(obs).happyNewYear("Popups", "ShotDisclaimer", 8);
             console.log("Next timezone to celebrate NYE: %o", timezones[timezonesCounted]);
         } else {
             return;
