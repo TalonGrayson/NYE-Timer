@@ -1,8 +1,7 @@
 const obs = require("./obs-connector");
 const { DateTime } = require("luxon");
 const Action = require("./actions");
-const targetDateTime = "2024-01-01T00:00:00"
-// const targetDateTime = "2023-12-30T19:49:00"
+const targetDateTime = process.env.TARGET_DATETIME;
 
 console.log("Starting NYE Countdowns...");
 console.log("Counting down to: %o", targetDateTime);
@@ -27,7 +26,7 @@ let timezones = [
 let timezonesCounted = 0;
 
 const calculateTimeRemaining = () => {
-    const ukTime = DateTime.now().setZone(timezones[0]);
+    const ukTime = DateTime.now().setZone(process.env.MY_TIMEZONE);
     const nextMidnight = DateTime.fromISO(targetDateTime, { zone: timezones[timezonesCounted] });
     const millisecondsRemaining = nextMidnight - ukTime;
 
@@ -61,6 +60,9 @@ const displayCountdownString = (timeRemaining) => {
     }
 
     console.clear();
+    if(!(process.env.OBS_WEBSOCKET_ADDRESS && process.env.OBS_WEBSOCKET_PASSWORD)) {
+        console.log("OBS connection info not found - please update your .env per the README");
+    }
     if(timezonesCounted > 0) {
         console.log(`Happy New Year, ${timezones[timezonesCounted-1].split("/")[1]}!`)
     }
@@ -75,11 +77,11 @@ const thereIsAnotherTimezone = () => {
     return timezones[timezonesCounted+1] != null;
 }
 
-tenSecondsToGo = (timeRemaining) => {
+const tenSecondsToGo = (timeRemaining) => {
     return timeRemaining.days <= 0 && timeRemaining.hours <= 0 && timeRemaining.minutes <= 0 && timeRemaining.seconds == 10;
 }
 
-lessThanTenSecondsToGo = (timeRemaining) => {
+const lessThanTenSecondsToGo = (timeRemaining) => {
     return timeRemaining.days <= 0 && timeRemaining.hours <= 0 && timeRemaining.minutes <= 0 && timeRemaining.seconds <= 10;
 }
 
@@ -102,7 +104,15 @@ const countdown = () => {
         
         if(tenSecondsToGo(timeRemaining)) {
             displayCountdownString(timeRemaining);
-            new Action(obs).happyNewYear("Popups", "NYECountdown", 33);
+            if(process.env.OBS_WEBSOCKET_ADDRESS) {
+                new Action(obs).happyNewYear(
+                    process.env.OBS_ALERT_SCENE,
+                    process.env.OBS_ALERT_SOURCE,
+                    parseInt(process.env.OBS_ALERT_DURATION)
+                );
+            } else {
+                console.log("OBS connection info not found - please update your .env")
+            }
         } else if(countdownHasNotReachedZero(timeRemaining)) {
             displayCountdownString(timeRemaining);
         } else if (thereIsAnotherTimezone()) {
